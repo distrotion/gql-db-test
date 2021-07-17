@@ -13,6 +13,7 @@ RUN go mod download
 COPY / .
 
 # Build
+RUN go get github.com/go-chi/chi@v3.3.2+incompatible
 RUN go build -o /gql-db-test
 
 # This is for documentation purposes only.
