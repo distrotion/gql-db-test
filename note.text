@@ -1,0 +1,123 @@
+type LinkSignout {
+  username: String!
+  clinicid: String
+  signouttime: String
+  user: User
+}
+
+type User {
+  userid: ID
+  username: String!
+}
+
+type Query {
+  links: [LinkSignout!]!
+}
+
+input NewSignout {
+  username: String!
+  clinicid: String!
+  signouttime: String!
+}
+
+input RefreshTokenInput{
+  token: String!
+}
+
+input NewUser {
+  username: String!
+  password: String!
+  createtime: String!
+  clinicid:  String!
+  roleid: Int!
+  accountstatus: Int!
+  sessionlifetime:Int!
+}
+
+input Login {
+  username: String!
+  password: String!
+  attempt: Int!
+  signintime: String! 
+}
+
+type Mutation {
+  createSignout(input: NewSignout!): LinkSignout!   
+  createUser(input: NewUser!): String!
+  login(input: Login!): String!
+  
+  refreshToken(input: RefreshTokenInput!): String!
+}
+
+----------------------------------------------
+type Link                  ==>  type LinkSignout         !!
+type User                  ==>  type User
+type Query                 ==>  type Query
+input NewLink              ==>  input NewSignout         !!
+input RefreshTokenInput    ==>  input RefreshTokenInput
+input NewUser              ==>  input NewUser
+input Login                ==>  input Login
+type Mutation              ==>  type Mutation
+++ createLink     ==>  createSignout                     !!
+++ createUser     ==>  createUser
+++ login          ==>  login
+++ refreshToken   ==>  refreshToken
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Link
+var links []*model.LinkSignout
+  dummyLinkSignout := model.LinkSignout{
+    Username: "Parin",
+    Clinicid: "some where",
+    User: &model.User{username: "admin"},
+  }
+	links = append(links, &dummyLinkSignout)
+	return links, nil
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CreateSignout
+
+var link model.LinkSignout
+	var user model.User
+	link.Username = input.Username
+	link.Clinicid = input.Clinicid
+	user.Username = "test"
+	link.User = &user
+	return &link, nil
+
+==> schema.resolvers.go ==> CreateSignout
+
+var link linksignout.Link
+	link.Username = input.Username
+	link.Clinicid = input.Clinicid
+	link.Signouttime = input.Signouttime
+	linkID := link.Save()
+	fmt.Println(linkID)
+	return &model.LinkSignout{Username: link.Username, Clinicid: link.Clinicid, Signouttime: link.Signouttime}, nil
+
+==> schema.resolvers.go ==> Link
+
+var resultLinks []*model.LinkSignout
+	var dbLinks []linksignout.Link = linksignout.GetAll()
+	for _, link := range dbLinks {
+		resultLinks = append(resultLinks, &model.LinkSignout{Username: link.Username, Clinicid: link.Clinicid, Signouttime: link.Signouttime})
+	}
+	return resultLinks, nil
+
+==> schema.resolvers.go ==> CreateUser
+
+var user users.User
+	user.Username = input.Username
+	user.Password = input.Password
+	user.Create()
+	token, err := jwt.GenerateToken(user.Username)
+	if err != nil{
+		return "", err
+	}
+	return token, nil
+
+
+
+
+

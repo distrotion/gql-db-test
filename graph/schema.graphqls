@@ -1,0 +1,62 @@
+type LinkSignout {
+  username: String!
+  clinicid: String!
+  signouttime: String!
+  user: User
+}
+
+type User {
+  userid: ID!
+  username: String!
+}
+
+type Query {
+  links: [LinkSignout!]!
+}
+
+type ReturnSignin  {
+	Status:String! 
+	Sessionid:String!
+	Clinicid:String!
+	Userid:String!
+	Roleid:Int!
+	Accountstatus:Int!
+	Sessionlifetime:Int!
+}
+
+input NewSignout {
+  username: String!
+  clinicid: String!
+  signouttime: String!
+}
+
+input RefreshTokenInput{
+  token: String!
+}
+
+input NewUser {
+  username: String!
+  password: String!
+  createtime: String!
+  clinicid:  String!
+  roleid: Int!
+  accountstatus: Int!
+  sessionlifetime:Int!
+}
+
+input Login {
+  username: String!
+  password: String!
+  attempt: Int!
+  signintime: String! 
+}
+
+
+
+type Mutation {
+  createSignout(input: NewSignout!): LinkSignout!   
+  createUser(input: NewUser!): String!
+  login(input: Login!): ReturnSignin!
+  
+  refreshToken(input: RefreshTokenInput!): String!
+}

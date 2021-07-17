@@ -1,0 +1,31 @@
+Send signout.data {
+clinic_id: string
+user_id: string  
+signout_time: datetime (YYYY-MM-DD-HH:MM:SS:MS)
+}
+
+################# action: stamp datetime only
+
+
+Send signin.data {
+username: string (email) 
+password: string (hash SHA-256) 
+attempt: int
+signin_time: datetime (YYYY-MM-DD-HH:MM:SS:MS)
+}
+
+################# action: stamp datetime and reply Return
+
+
+Return user.value{
+
+session_id:string
+clinic_id:  string (hash SHA-256) 
+user_id :  string (hash SHA-256) 
+role_id: int
+account_status: int (0=inactive, 1=active) 
+session_lifetime:int
+
+}
+
+################# action: after singin 
